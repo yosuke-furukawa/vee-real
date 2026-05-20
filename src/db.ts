@@ -1,13 +1,31 @@
-import Database from 'better-sqlite3'
+import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 
 const DB_PATH = process.env.DB_PATH ?? 'data/app.db'
 mkdirSync(dirname(DB_PATH), { recursive: true })
 
-export const db = new Database(DB_PATH)
-db.pragma('journal_mode = WAL')
-db.pragma('foreign_keys = ON')
+const sqlite = new DatabaseSync(DB_PATH)
+sqlite.exec('PRAGMA journal_mode = WAL')
+sqlite.exec('PRAGMA foreign_keys = ON')
+
+export interface Statement<P extends unknown[] = [], R = unknown> {
+  run(...params: P): { lastInsertRowid: number | bigint; changes: number | bigint }
+  get(...params: P): R | undefined
+  all(...params: P): R[]
+}
+
+export const db = {
+  exec(sql: string): void {
+    sqlite.exec(sql)
+  },
+  close(): void {
+    sqlite.close()
+  },
+  prepare<P extends unknown[] = [], R = unknown>(sql: string): Statement<P, R> {
+    return sqlite.prepare(sql) as unknown as Statement<P, R>
+  },
+}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (

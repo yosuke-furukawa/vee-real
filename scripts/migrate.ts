@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3'
+import { DatabaseSync } from 'node:sqlite'
 import { existsSync, readFileSync, rmSync, cpSync, mkdirSync } from 'node:fs'
 
 const DB_PATH = 'data/app.db'
@@ -13,8 +13,8 @@ if (!existsSync(SEED_SQL)) {
 
 console.log('resetting database...')
 mkdirSync('data', { recursive: true })
-const db = new Database(DB_PATH)
-db.pragma('foreign_keys = OFF')
+const db = new DatabaseSync(DB_PATH)
+db.exec('PRAGMA foreign_keys = OFF')
 db.exec(`
   DROP TABLE IF EXISTS posts;
   DROP TABLE IF EXISTS sessions;
@@ -29,7 +29,7 @@ if (existsSync(SEED_UPLOADS)) {
   cpSync(SEED_UPLOADS, LIVE_UPLOADS, { recursive: true })
 }
 
-const users = db.prepare<[], { c: number }>('SELECT count(*) AS c FROM users').get()!.c
-const posts = db.prepare<[], { c: number }>('SELECT count(*) AS c FROM posts').get()!.c
+const users = (db.prepare('SELECT count(*) AS c FROM users').get() as { c: number }).c
+const posts = (db.prepare('SELECT count(*) AS c FROM posts').get() as { c: number }).c
 db.close()
 console.log(`done. users: ${users}, posts: ${posts}`)

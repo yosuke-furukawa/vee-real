@@ -1,23 +1,23 @@
 # VEE-REAL
 
-シンプルな画像共有掲示板 (BeReal 風)。Hono + better-sqlite3 + jQuery/Fancybox の MPA。
+シンプルな画像共有掲示板 (BeReal 風)。Hono + `node:sqlite` + jQuery/Fancybox の MPA。
 
 `PROMPT.md` にある通り、「**どこまでモダンに改善できるか**」を題材にするための、わざと素朴な実装が出発点です。
 
 ## 必要なもの
 
-- Node.js 22+
+- Node.js 24+（`node:sqlite` を使うため。v22 だと `--experimental-sqlite` フラグが必要）
 - pnpm
 
 ## 起動手順
 
 ```bash
-pnpm install         # 依存インストール (better-sqlite3 / sharp のネイティブビルドが走ります)
+pnpm install         # 依存インストール (sharp のみネイティブビルドが走ります)
 npm run migrate      # seed/ から DB と画像を復元 (10 users / 202 posts)
 pnpm dev             # http://localhost:3000
 ```
 
-これだけ。`pnpm-workspace.yaml` でネイティブビルドが許可済みなので、初回も追加操作なしで通ります。
+SQLite は Node 同梱の `node:sqlite` を使うため、SQLite まわりのネイティブビルドはありません。
 
 ## デフォルトログイン
 
@@ -50,7 +50,7 @@ pnpm dev             # http://localhost:3000
 ```
 src/
   index.ts            # Hono サーバー本体
-  db.ts               # SQLite スキーマ
+  db.ts               # SQLite スキーマ (node:sqlite ラッパ)
   auth.ts             # bcryptjs パスワード + DB ベースのセッション
   images.ts           # 画像保存 (リサイズなし、原寸そのまま)
   routes/             # /signup /login /logout / /post
