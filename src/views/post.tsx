@@ -1,4 +1,5 @@
 import type { FC } from 'hono/jsx'
+import { raw } from 'hono/html'
 import { Layout } from './layout.js'
 import type { User } from '../db.js'
 
@@ -12,7 +13,7 @@ export const PostPage: FC<Props> = ({ user, error }) => (
     <section class="post-form">
       <h1>写真を投稿</h1>
       {error && <p class="error" role="alert">{error}</p>}
-      <form method="post" action="/post" enctype="multipart/form-data" class="stack">
+      <form id="post-form" data-post-form method="post" action="/post" enctype="multipart/form-data" class="stack">
         <label class="file-pick">
           <span class="file-pick-label">📷 写真をえらぶ / 撮る</span>
           <input
@@ -22,8 +23,10 @@ export const PostPage: FC<Props> = ({ user, error }) => (
             capture="environment"
             required
           />
-          <span class="file-pick-hint">最大 8MB · 原寸のまま投稿されます</span>
+          <span class="file-pick-hint">最大 8MB · 送信時に自動でリサイズ + WebP化されます</span>
         </label>
+        <img id="preview" class="preview" alt="" hidden />
+        <p id="status" class="post-status" role="status" aria-live="polite"></p>
         <label>
           <span>ひとこと（任意・最大140字）</span>
           <textarea name="caption" maxLength={140} rows={3} placeholder="今日のひとこと…" />
@@ -31,5 +34,6 @@ export const PostPage: FC<Props> = ({ user, error }) => (
         <button type="submit" class="btn btn-primary btn-block">投稿する</button>
       </form>
     </section>
+    {raw('<script type="module" src="/post.js" defer></script>')}
   </Layout>
 )

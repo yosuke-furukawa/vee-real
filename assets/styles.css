@@ -194,6 +194,27 @@ input:focus-visible, textarea:focus-visible {
 .file-pick-hint  { color: var(--muted); font-size: 12px; }
 .file-pick input[type="file"] { font-size: 14px; }
 
+.preview {
+  display: block;
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: 12px;
+  background: var(--card);
+  object-fit: contain;
+}
+.preview[hidden] { display: none; }
+
+.post-status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  min-height: 1.2em;
+}
+.post-status.error {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .error {
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
@@ -201,6 +222,46 @@ input:focus-visible, textarea:focus-visible {
   border-radius: 10px;
   margin: 0 0 12px;
   font-size: 14px;
+}
+
+/* Post modal */
+.post-modal {
+  border: none;
+  padding: 0;
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--fg);
+  max-width: min(520px, 92vw);
+  width: 100%;
+  max-height: 92vh;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
+}
+.post-modal::backdrop {
+  background: rgba(0, 0, 0, .55);
+  backdrop-filter: blur(2px);
+}
+.post-modal-form {
+  padding: 16px;
+  margin: 0;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+.post-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -4px 0 4px;
+}
+.post-modal-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.post-modal-head [data-close-modal] {
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 12px;
+  min-height: 36px;
 }
 
 /* Reduce motion */

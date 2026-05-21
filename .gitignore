@@ -1,6 +1,11 @@
 node_modules/
 data/
 public/uploads/
+# Build output (sources in assets/, produced by `pnpm build:assets`)
+public/post.js
+public/feed.js
+public/post-modal.js
+public/styles.css
 .env
 .DS_Store
 *.log

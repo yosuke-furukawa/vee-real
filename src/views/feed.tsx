@@ -1,11 +1,11 @@
 import type { FC } from 'hono/jsx'
 import { Layout } from './layout.js'
-import type { Post, User } from '../db.js'
+import type { FeedPost, User } from '../db.js'
 import { imageSrc } from '../images.js'
 
 type Props = {
   user: User | null
-  posts: Post[]
+  posts: FeedPost[]
 }
 
 const fmtRelative = (ms: number, now: number): string => {
@@ -27,27 +27,47 @@ export const FeedPage: FC<Props> = ({ user, posts }) => {
   return (
     <Layout title="フィード" user={user} description="VEE-REAL: 今日の一枚をシェア">
       {posts.length === 0 && (
-        <p class="empty">
+        <p class="empty" data-feed-empty>
           まだ投稿はありません。{user ? <a href="/post">最初の一枚を投稿</a> : <a href="/signup">登録して投稿</a>}しよう。
         </p>
       )}
 
-      <ol class="feed" role="list">
+      <ol class="feed" role="list" data-feed>
         {posts.map((p) => {
           const ago = fmtRelative(p.created_at, now)
           const title = p.caption ? `@${p.username} · ${ago} · ${p.caption}` : `@${p.username} · ${ago}`
+          const origUrl = p.orig_path ?? imageSrc(p.image_id)
+          const lightboxUrl = p.display_path ?? origUrl
+          const alt = p.caption || `@${p.username} の投稿`
+          const w = p.thumb_w ?? p.width
+          const h = p.thumb_h ?? p.height
           return (
-            <li class="card" title={title}>
-              <a href={imageSrc(p.image_id)} data-fancybox="feed" data-caption={title}>
-                <img
-                  class="photo"
-                  src={imageSrc(p.image_id)}
-                  width={p.width}
-                  height={p.height}
-                  loading="lazy"
-                  decoding="async"
-                  alt={p.caption || `@${p.username} の投稿`}
-                />
+            <li class="card" title={title} data-post-id={p.id}>
+              <a href={lightboxUrl} data-fancybox="feed" data-caption={title}>
+                {p.thumb_path ? (
+                  <picture>
+                    <source type="image/webp" srcSet={p.thumb_path} />
+                    <img
+                      class="photo"
+                      src={origUrl}
+                      width={w}
+                      height={h}
+                      loading="lazy"
+                      decoding="async"
+                      alt={alt}
+                    />
+                  </picture>
+                ) : (
+                  <img
+                    class="photo"
+                    src={origUrl}
+                    width={w}
+                    height={h}
+                    loading="lazy"
+                    decoding="async"
+                    alt={alt}
+                  />
+                )}
               </a>
               <div class="card-head">
                 <span class="user">@{p.username}</span>
@@ -57,6 +77,7 @@ export const FeedPage: FC<Props> = ({ user, posts }) => {
           )
         })}
       </ol>
+      <script src="/feed.js" type="module" defer></script>
     </Layout>
   )
 }

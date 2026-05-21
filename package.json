@@ -5,21 +5,31 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "predev": "pnpm build:assets",
     "start": "tsx src/index.ts",
+    "prestart": "pnpm build:assets",
+    "preh3": "pnpm build:assets",
+    "build:assets": "esbuild assets/post.js assets/feed.js assets/post-modal.js --minify --target=es2022 --format=esm --outdir=public --log-level=warning && esbuild assets/styles.css --minify --outdir=public --log-level=warning",
     "migrate": "tsx scripts/migrate.ts",
-    "typecheck": "tsc --noEmit"
+    "process-images": "tsx scripts/process-images.ts",
+    "h3": "bash scripts/h3.sh",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.5.0",
     "hono": "^4.6.14",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "ws": "^8.20.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.10.2",
+    "@types/ws": "^8.18.1",
+    "esbuild": "^0.28.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }

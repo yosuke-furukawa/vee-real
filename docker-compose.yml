@@ -1,0 +1,34 @@
+services:
+  app:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - app-node-modules:/app/node_modules
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm start"
+    environment:
+      PORT: "3000"
+      WORKER_INTERVAL_MS: "2000"
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on: [app]
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      APP_UPSTREAM: "app:3000"
+    restart: unless-stopped
+
+volumes:
+  app-node-modules:
+  caddy-data:
+  caddy-config:
